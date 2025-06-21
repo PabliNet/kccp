@@ -1,0 +1,82 @@
+#!/bin/sh
+help() {
+    case $lang in
+        es)
+            printf "Modo de uso: kccp archivo.jpg 'Mi Dispositivo'\n"
+            printf "             kccp '/.+\.ogg/' 'Mi Dispositivo'\n"
+            printf " -h, --help\t\tMuestra esta ayuda y sale\n\n"
+            printf "     --version\t\tMuestra la información de versión\n"
+        ;;
+        *)
+            printf "Usage: kccp file.jpg 'My Device'\n"
+            printf "       kccp '/.+\.ogg/' 'My Device'\n"
+            printf " -h, --help\t\tdisplay this help and exit\n\n"
+            printf "     --version\t\toutput version information and exit\n"
+        ;; esac
+    exit 0
+}
+err() {
+    case "$lang" in
+        "es")
+            case $1 in
+                1) printf "Se necesita especificar el dispositivo y el archivo o patrón a compartir.\n" ;;
+                2) printf "Falta un argumento.\n" ;;
+                3) printf "Expresión regular mal escrita.\n" ;;
+            esac ;;
+        *)
+            case $1 in
+                1) printf "Please specify both the device and the file or pattern to share.\n" ;;
+                2) printf "A required input is missing.\n" ;;
+                3) printf "The regular expression is not written correctly.\n" ;;
+            esac ;;
+    esac
+    exit $1
+}
+
+copy="$1"
+config="$HOME/.config/kccp/kccprc"
+[ "$#" -eq 1 ] && device=$(awk -F' = ' '/^default_device = / {print $2}' "$config")
+[ "$#" -eq 2 ] && device="$2"
+script_name=$(basename "$0")
+version=0.0.2
+
+lang=$(printf %.2s "${LANG:-en}" | tr '[:upper:]' '[:lower:]')
+
+if [ "$#" -lt 2 ] || [ -z "$copy" ] || [ -z "$device" ]; then
+    case "$copy" in
+        '-h'|'--help') [ "$#" -eq 1 ] && help ;;
+        '--version') printf "${script_name}${version}\n" ;;
+        *) if [ ! -f "$config" ]; then
+            [ "$#" -eq 0 ] && err 1 || err 2
+        fi ;;
+    esac
+fi
+
+len_copy=${#copy}
+arrow=$(printf %s "$copy" | sed 's/\(.\).*\(.\)$/\1\2/')
+
+c=0
+if [ "$arrow" = '//' -o "$arrow" = '||' ]; then
+    if [ "$len_copy" -gt 2 ]; then
+        regex=$(printf %s "$copy" | sed 's#^.\(.*\).$#\1#')
+        for f in *; do
+            case $f in
+                .*) continue ;;
+            esac
+            if [ -f "$f" ] && printf '%s\n' "$f" | grep -Eq "$regex"; then
+                kdeconnect-cli -n "$device" --share "$f" > /dev/null
+                c=$((c + 1))
+                printf "%s\n" "$f"
+            fi
+        done
+        case $lang in
+            'es') [ "$c" -eq 0 ] && printf "No se encontraron archivos que coincidan con la expresión.\n" || printf "Se compartieron %d archivos\n" "$c" ;;
+            *) [ "$c" -eq 0 ] && printf "No files matching the regular expression were found.\n" || printf "%d files were shared.\n" "$c" ;;
+        esac
+    else
+        err 3
+    fi
+else
+    kdeconnect-cli -n "$device" --share "$copy" > /dev/null
+    printf "%s\n" "$copy"
+fi
