@@ -27,6 +27,32 @@ Enjoy fast file sharing from your terminal — no clicks needed.
 
 Copy the script somewhere in your `$PATH`, and make it executable:
 
-```sh
-cp kccp /usr/local/bin/
-chmod +x /usr/local/bin/kccp
+~~~
+# cp kccp /usr/local/bin/
+# chmod +x /usr/local/bin/kccp
+~~~
+---
+
+## 🖥️ Usage
+
+~~~
+$ kccp 'foto de perro.jpg' android
+$ kccp '/.+\.jpg/' 'my device'
+~~~
+
+---
+
+## 🛠️ Config (optional)
+
+A default device can be configured.
+
+~~~
+$ mkdir ~/.config/kccp
+$ echo default_device = nombre del dispositivo > ~/.config/kccp/kccprc
+~~~
+
+💡 Examples using the configured default device
+~~~
+$ kccp 'foto de perro.jpg'
+$ kccp '/.+\.jpg/'
+~~~

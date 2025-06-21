@@ -35,10 +35,10 @@ err() {
 
 copy="$1"
 config="$HOME/.config/kccp/kccprc"
-[ "$#" -eq 1 ] && device=$(awk -F' = ' '/^default_device = / {print $2}' "$config")
+[ "$#" -eq 1 ] && device=$(awk -F' *= *' '/^default_device = / {print $2}' "$config")
 [ "$#" -eq 2 ] && device="$2"
 script_name=$(basename "$0")
-version=0.0.2
+version=0.0.3
 
 lang=$(printf %.2s "${LANG:-en}" | tr '[:upper:]' '[:lower:]')
 
