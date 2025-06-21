@@ -25,19 +25,51 @@ Enjoy fast file sharing from your terminal — no clicks needed.
 
 ## 📥 Installation
 
+**As root or using sudo**
+
 Copy the script somewhere in your `$PATH`, and make it executable:
 
 ~~~
-# cp kccp /usr/local/bin/
-# chmod +x /usr/local/bin/kccp
+cp kccp /usr/local/bin/
+chmod +x /usr/local/bin/kccp
+~~~
+---
+
+## 📦 Installation from APT
+
+**As root or using sudo**
+
+Add APT Repository:
+~~~
+echo "deb https://pablinet.github.io/apt ./" > /etc/apt/sources.list.d/pablinet.list
+~~~
+
+Add APT Key with `curl`:
+~~~
+curl -fsSL https://pablinet.github.io/apt/pablinet.gpg -o /etc/apt/trusted.gpg.d/pablinet.gpg
+~~~
+
+Or add APT Key with `wget`:
+~~~
+wget -O /etc/apt/trusted.gpg.d/pablinet.gpg https://pablinet.github.io/apt/pablinet.gpg
+~~~
+
+Update Repository:
+~~~
+apt Update
+~~~
+
+Install kccp
+~~~
+apt Install kccp
 ~~~
 ---
 
 ## 🖥️ Usage
 
 ~~~
-$ kccp 'foto de perro.jpg' android
-$ kccp '/.+\.jpg/' 'my device'
+kccp filename device
+kccp '/.+\.jpg/' device
 ~~~
 
 ---
@@ -47,12 +79,12 @@ $ kccp '/.+\.jpg/' 'my device'
 A default device can be configured.
 
 ~~~
-$ mkdir ~/.config/kccp
-$ echo default_device = nombre del dispositivo > ~/.config/kccp/kccprc
+mkdir ~/.config/kccp
+echo default_device = nombre del dispositivo > ~/.config/kccp/kccprc
 ~~~
 
 💡 Examples using the configured default device
 ~~~
-$ kccp 'foto de perro.jpg'
-$ kccp '/.+\.jpg/'
+kccp 'foto de perro.jpg'
+kccp '/.+\.jpg/'
 ~~~
